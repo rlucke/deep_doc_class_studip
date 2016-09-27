@@ -15,6 +15,11 @@ from Text_Score_Module import TextScore
 
 #INSERT IMPORT OF NEURAL NETWORK HERE
 
+#prunes the filenames up to the point, the savefile saved the classifications last time, so the system can proceed
+#instead of starting all over from the beginning
+def prune(filenames, save_file):
+    return
+
 #get all filenames
 #the system currently assumes that all pdfs are stored in a single folder
 #simply calles 'files'
@@ -55,6 +60,8 @@ def get_metapointer(path,filename):
 #@param batch_size: the latest batch_size results are written in the file
 # -1 indicates that the batchsize is equal to the total number of files to
 # classify
+# saves also the data-vector
+#give csv rows names
 def save_result(result,filenames,save_file, batch_size = -1):
     return
 
@@ -81,6 +88,8 @@ network = getNN(len(modules))
 #get filenames
 path = './files'
 filenames = get_files(path)
+#prune filenames if the system crashed
+prune(filenames, save_file)
 
 #classification
 #batch size for the saving process

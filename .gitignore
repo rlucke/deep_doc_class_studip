@@ -1,2 +1,9 @@
 *.pyc
 __pycache__
+*.xml
+
+.idea/.name
+
+.idea/deep_doc_class.iml
+
+test2.txt
