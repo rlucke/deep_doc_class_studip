@@ -7,3 +7,5 @@ __pycache__
 .idea/deep_doc_class.iml
 
 test2.txt
+
+*.pdf

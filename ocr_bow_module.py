@@ -84,6 +84,9 @@ class OCR_BoW_Module:
         @return     a sanitized bag of words (no blankspaces and blacklist words 
                     eliminated)
         """
+        #convert everything to lowercase
+        txt = txt.lower()
+
         #get rid of some non-word symbols
         txt = txt.replace(',','')
         txt = txt.replace('.','')

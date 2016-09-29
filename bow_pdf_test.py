@@ -14,8 +14,8 @@ import csv
 
 class BoW_Text_Module:
 
-    def __init__(self):
-        self.lib = self.load_lib()
+    def __init__(self, mode = ''):
+        self.lib = self.load_lib(mode)
         return
 
     def sanitize(self,txt):
@@ -105,8 +105,11 @@ class BoW_Text_Module:
                 score += bow[key] * lib[key]
         return key
 
-    def load_lib(self):
-        return open('bow_train.txt','r')
+    def load_lib(self,mode = 'full'):
+        if(mode == ''):
+            return open('bow_train_full.txt','r')
+        else:
+            return open('bow_train.txt','r')
 
 
 """

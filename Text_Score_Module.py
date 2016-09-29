@@ -53,10 +53,10 @@ class TextScore:
             #fp.close()
             device.close()
             retstr.close()
+            return text
         except:
             print('troubleshooting')
-        return text
-    
+            return 'ERROR'
     #@param filepointer a pointer to a pdf file
     #@param metapointer a pointer to the metadata, this parameter is not used
     #@return float64 [0 1] probabiliy for the pdf  beeing copyright protected     

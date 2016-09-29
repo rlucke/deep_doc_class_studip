@@ -25,8 +25,11 @@ class Page_Size_Module:
         caching = True
         pagenos=set()
         length = 0
-        for page in PDFPage.get_pages(fp, pagenos, maxpages=maxpages, password=password,caching=caching, check_extractable=True):
-            length += 1
+        try:
+            for page in PDFPage.get_pages(fp, pagenos, maxpages=maxpages, password=password,caching=caching, check_extractable=True):
+                length += 1
+        except:
+            return 1.0
         return float(length)
 
     def get_function(self,filepointer, metapointer = None):
