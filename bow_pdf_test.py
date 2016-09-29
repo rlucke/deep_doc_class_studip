@@ -14,7 +14,7 @@ import csv
 
 class BoW_Text_Module:
 
-    def __init__(self, mode = ''):
+    def __init__(self, mode = 'full'):
         self.lib = self.load_lib(mode)
         return
 
@@ -100,16 +100,26 @@ class BoW_Text_Module:
         :return:
         """
         score = 0
-        for key,value in bow:
+        for key in bow:
             if key in lib:
-                score += bow[key] * lib[key]
-        return key
+                score += float(bow[key]) * float(lib[key])
+        return score
 
     def load_lib(self,mode = 'full'):
-        if(mode == ''):
-            return open('bow_train_full.txt','r')
+        if(mode == 'full'):
+            return eval(open('bow_train_full.txt','r').read())
         else:
-            return open('bow_train.txt','r')
+            return eval(open('bow_train.txt','r').read())
+
+    def get_function(self,filepointer, metapointer = None):
+        try:
+            txt = self.convert_pdf_to_txt(filepointer)
+        except:
+            return 0.0
+        txt = self.sanitize(txt)
+        bow = self.get_bow(txt)
+        score = self.get_score(bow,self.lib)
+        return score
 
 
 """

@@ -9,3 +9,7 @@ __pycache__
 test2.txt
 
 *.pdf
+
+README
+
+metadata.csv

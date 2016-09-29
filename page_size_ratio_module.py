@@ -41,7 +41,7 @@ class Page_Size_Module:
         """
 
         #get filesize in kilobytes
-        size = float(os.path.getsize(filepointer.name)/(1024))
+        size = float(os.path.getsize(filepointer.name)/(1024.0))
 
         #get number of pages
         pages = self.enum_pages(filepointer)

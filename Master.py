@@ -87,8 +87,9 @@ def getNN(input_dim):
 #maybe csv-file, not yet decided
 #create file if nonexistent
 if(not os.path.isfile('classes.csv')):
-    save_file = open('classes.csv','w')
-    save_file.close()
+    with open('classes.csv', 'wb') as outcsv:
+        writer = csv.writer(outcsv,delimiter=';')
+        writer.writerow(["Filename", "TextScore","BoWTextScore","Pagesize(KBytes)", "Classification"])
 #open file for pruning
 save_file = open('classes.csv','r')
 
