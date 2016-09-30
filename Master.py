@@ -60,7 +60,7 @@ def get_data_vector(modules, filepointer, metapointer=None):
     return np.array(data)
 
 def get_filepointer(path,filename):
-    return open(path+'/'+filename,'r')
+    return open(path+'/'+filename,'rb')
 
 def get_metapointer(path,filename):
     return
