@@ -47,3 +47,6 @@ class Page_Size_Module:
         pages = self.enum_pages(filepointer)
 
         return size/pages
+
+    def train(self,filenames,classes):
+        return

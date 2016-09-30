@@ -121,6 +121,38 @@ class BoW_Text_Module:
         score = self.get_score(bow,self.lib)
         return score
 
+    def train(self,filenames,classes):
+        """
+        @param filenames:   a list of paths, leading to training files
+        @param classes:     a list of classifications, in the same order as the filenames
+
+        This function replaced the loaded library of words and probabilities with a newly trained one, based
+        on the input arguments.
+        This newly generated library is NOT saved permanently and will be lost after the system terminated
+        """
+        lib = dict()
+        all = 0
+        for i in range(len(filenames)):
+            if(classes[i] == 'True'):
+                continue
+            with open(filenames[i],'r') as fp:
+                try:
+                    txt = self.convert_pdf_to_txt(fp)
+                    txt = self.sanitize(txt)
+                    bow = (self.get_bow(txt))
+                    for key in bow:
+                        all += bow[key]
+                        if not key in lib:
+                            lib[key] = 1
+                        else:
+                            lib[key] += bow[key]
+                except:
+                    continue
+        for key in lib:
+            lib[key] /= all
+        self.lib = lib
+        return
+
 
 """
 #training script to create the lib

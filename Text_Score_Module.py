@@ -63,3 +63,26 @@ class TextScore:
     def get_function(self,filepointer, metapointer = None):
         x = len(self.convert_pdf_to_txt(filepointer,-1))
         return s.norm.pdf(self.mean,self.std,x)
+
+
+    def train(self,filenames,classes):
+        """
+        @param filenames:   a list of paths, leading to training files
+        @param classes:     a list of classifications, in the same order as the filenames
+
+        This function replaces the parameters of the gaussian pdf by new ones based on the files and classifications
+        provided by the files
+        """
+        len_list = list()
+        for i in range(len(filenames)):
+            if(classes[i] == 'True'):
+                continue
+            with open(filenames[i],'r') as fp:
+                try:
+                    len_list.append(len(self.convert_pdf_to_txt(fp)))
+                except:
+                    continue
+            self.mean = np.mean(len_list)
+            self.std = np.std(len_list)
+
+        return

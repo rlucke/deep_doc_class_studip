@@ -18,6 +18,9 @@ from page_size_ratio_module import Page_Size_Module
 
 #INSERT IMPORT OF NEURAL NETWORK HERE
 
+def train(modules,neural_network,files,metafile):
+    return
+
 #prunes the filenames up to the point, the savefile saved the classifications last time, so the system can proceed
 #instead of starting all over from the beginning
 def prune(filenames, save_file):
@@ -82,6 +85,12 @@ def save_result(classes, save_file):
 def getNN(input_dim):
     return
 
+args = sys.argv
+training = False
+#train mode
+if '-t' in args:
+    training = True
+
 
 #init filepointer for save-file here, the file will contain all classifications
 #maybe csv-file, not yet decided
@@ -101,9 +110,12 @@ modules = list()
 modules.append(TextScore())
 modules.append(BoW_Text_Module())
 modules.append(Page_Size_Module())
+#ADD MODULES HERE
 
 #init neural network
 network = getNN(len(modules))
+
+#START TRAINING HERE
 
 #get filenames
 path = './files'
