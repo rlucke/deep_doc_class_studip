@@ -121,10 +121,11 @@ class BoW_Text_Module:
         score = self.get_score(bow,self.lib)
         return score
 
-    def train(self,filenames,classes):
+    def train(self,filenames,classes,metalist = None):
         """
         @param filenames:   a list of paths, leading to training files
         @param classes:     a list of classifications, in the same order as the filenames
+        @param metalist     not used
 
         This function replaced the loaded library of words and probabilities with a newly trained one, based
         on the input arguments.

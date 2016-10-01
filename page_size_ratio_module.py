@@ -48,5 +48,5 @@ class Page_Size_Module:
 
         return size/pages
 
-    def train(self,filenames,classes):
+    def train(self,filenames,classes,metalist = None):
         return

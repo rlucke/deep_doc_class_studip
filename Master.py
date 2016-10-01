@@ -10,6 +10,7 @@ This script is extended as the system grows
 import csv
 import numpy as np
 import os, os.path, sys
+import MetaHandler
 
 #INSERT IMPORT MODULES HERE
 from Text_Score_Module import TextScore
@@ -17,6 +18,7 @@ from bow_pdf_test import BoW_Text_Module
 from page_size_ratio_module import Page_Size_Module
 
 #INSERT IMPORT OF NEURAL NETWORK HERE
+
 
 def train(modules,neural_network,files,metafile):
     return
@@ -62,8 +64,8 @@ def get_data_vector(modules, filepointer, metapointer=None):
 def get_filepointer(path,filename):
     return open(path+'/'+filename,'rb')
 
-def get_metapointer(path,filename):
-    return
+def get_metapointer(path):
+    return MetaHandler.get_whole_metadata(path)
 
 def save_result(classes, save_file):
     """
@@ -90,6 +92,8 @@ training = False
 #train mode
 if '-t' in args:
     training = True
+    TESTSIZE = 1000
+
 
 
 #init filepointer for save-file here, the file will contain all classifications
@@ -115,16 +119,40 @@ modules.append(Page_Size_Module())
 #init neural network
 network = getNN(len(modules))
 
-#START TRAINING HERE
-
 #get filenames
 path = './files'
 filenames = get_files(path)
+if training:
+    metadata,classes = MetaHandler.get_classified_metadata("metadata.csv","classification.csv")
+else:
+    metadata = get_metapointer('metadata.csv')
 #prune filenames if the system crashed
 prune(filenames, save_file)
 save_file.close()
 #open for writing new data
 save_file = open('classes.csv','a')
+
+#START TRAINING HERE
+if(training):
+    train, filenames = MetaHandler.gen_train_test_split(filenames,TESTSIZE)
+    #train module
+    #setup lists
+    c = list()
+    m = list()
+    print("Training Features...")
+    for t in train:
+        c.append(classes[t])
+        m.append(metadata[t])
+    nn_train = list()
+    #train features and setup the nn
+    for module in modules:
+        module.train(train,c,m)
+    print('Training Neural Network...')
+    for t in range(len(train)):
+        nn_train.append(get_data_vector(modules,train[t],m[t]))
+    network.trainNN(train,c)
+    print("Training done!")
+
 
 
 #classification
@@ -141,7 +169,7 @@ for f in filenames:
         classes = list()
     try:
         fp = get_filepointer(path,f)
-        mp = get_metapointer(path,f)
+        mp = metadata[f]
     except:
         print('Error opening file '+f)
         continue
@@ -160,3 +188,5 @@ for f in filenames:
 if(batch_size == -1):
     save_result()
 save_file.close()
+
+#ADD SOMETHING FOR PROCESSING RSUltS HERE

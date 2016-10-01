@@ -65,7 +65,7 @@ class TextScore:
         return s.norm.pdf(self.mean,self.std,x)
 
 
-    def train(self,filenames,classes):
+    def train(self,filenames,classes,metalist = None):
         """
         @param filenames:   a list of paths, leading to training files
         @param classes:     a list of classifications, in the same order as the filenames
