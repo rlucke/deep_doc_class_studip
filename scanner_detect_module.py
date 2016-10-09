@@ -101,7 +101,8 @@ class ScannerDetect:
             sf=self.readMetadata(inputpdf)
             if shutil.which('pdf-extract') is not None:
                 rf=self.extractRegions(inputpdf,1)
-                fm={**sf,**rf}
+                fts = sf.copy()
+                fts.update(rf)
             else:
                 print("Missing pdf-extract. Only using metadata features.")
                 fm=sf
@@ -162,7 +163,8 @@ class ScannerDetect:
                                    
                                        sf=self.readMetadata(inputpdf)
                                        rf=self.extractRegions(inputpdf,num_pages)
-                                       fts={**sf,**rf}
+                                       fts = sf.copy()
+                                       fts.update(rf)
                                        features.append(fts)
                                        
                                        if(len(features) != len(class_copy)):
