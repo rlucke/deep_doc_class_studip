@@ -29,6 +29,7 @@ class TextScore:
     def __init__(self):
         self.mean = 9109.10716436
         self.std = 22201.1272775
+        self.len_list = list()
         return
         
     # @param pages number of pages to transform to text starting from the first
@@ -76,16 +77,16 @@ class TextScore:
         This function replaces the parameters of the gaussian pdf by new ones based on the files and classifications
         provided by the files
         """
-        len_list = list()
-        for i in range(len(filenames)):
-            if(classes[i] == 'True'):
-                continue
-            with open('files/'+filenames[i],'r') as fp:
-                try:
-                    len_list.append(len(self.convert_pdf_to_txt(fp)))
-                except:
+        if(len(self.len_list) <= 1):
+            for i in range(len(filenames)):
+                if(classes[i] == 'True'):
                     continue
-            self.mean = np.mean(len_list)
-            self.std = np.std(len_list)
+                with open(filenames[i],'r') as fp:
+                    try:
+                        self.len_list.append(len(self.convert_pdf_to_txt(fp)))
+                    except:
+                        continue
+        self.mean = np.mean(self.len_list)
+        self.std = np.std(self.len_list)
 
         return
