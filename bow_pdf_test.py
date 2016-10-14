@@ -23,6 +23,7 @@ class BoW_Text_Module:
         :param text_score: a text_score-module object used for faster training, when bow is trained first
         :return:
         """
+        self.error = False
         if(mode == 'reset'):
             self.lib = dict()
         else:
@@ -97,6 +98,7 @@ class BoW_Text_Module:
         except:
             x=1#Placeholder
             #print('troubleshooting')
+            self.error = True
         return text
 
     def get_bow(self,txt):
@@ -126,8 +128,12 @@ class BoW_Text_Module:
 
     def get_function(self,filepointer, metapointer = None):
         try:
-            txt = self.convert_pdf_to_txt(filepointer)
+            if(self.text_score == None):
+                txt = self.convert_pdf_to_txt(filepointer)
+            else:
+                txt = self.text_score.x
         except:
+            self.error = True
             return 0.0
         txt = self.sanitize(txt)
         bow = self.get_bow(txt)
