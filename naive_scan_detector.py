@@ -28,37 +28,40 @@ class Naive_Scan_Detector:
     # if the argument is set to -1, all pages are read
     # @return a utf-8 coded string from the pdf.
     def convert_pdf_to_txt(self,fp,pages=-1):
-        rsrcmgr = PDFResourceManager()
-        retstr = StringIO()
-        codec = 'utf-8'
-        laparams = LAParams()
-        device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
-        interpreter = PDFPageInterpreter(rsrcmgr, device)
-        password = ""
-        maxpages = 0
-        caching = True
-        pagenos=set()
-        for page in PDFPage.get_pages(fp, pagenos, maxpages=maxpages, password=password,caching=caching, check_extractable=True):
-            if(pages==0):
-                break
-            interpreter.process_page(page)
-            pages -= 1
+        try:
+            rsrcmgr = PDFResourceManager()
+            retstr = StringIO()
+            codec = 'utf-8'
+            laparams = LAParams()
+            device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
+            interpreter = PDFPageInterpreter(rsrcmgr, device)
+            password = ""
+            maxpages = 0
+            caching = True
+            pagenos=set()
+            for page in PDFPage.get_pages(fp, pagenos, maxpages=maxpages, password=password,caching=caching, check_extractable=True):
+                if(pages==0):
+                    break
+                interpreter.process_page(page)
+                pages -= 1
 
-        text = retstr.getvalue()
-        fp.close()
-        device.close()
-        retstr.close()
-        #print(len(text))
-        print(int(raw_input(text[0])))
+            text = retstr.getvalue()
+            #fp.close()
+            device.close()
+            retstr.close()
+        except:
+            x=1#Placeholder
+            #print('troubleshooting')
+            self.error = True
         return len(text)
 
     def get_function(self,filepointer, metapointer = None):
 
-        if(self.text_module == None or True):
+        if(self.text_module == None):
             result = len(self.convert_pdf_to_txt(filepointer))
         else:
             result = len(self.text_module.x)
-        print result
+
         try:
             if(result > 1):
                 return 0.0
