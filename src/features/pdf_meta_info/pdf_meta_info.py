@@ -119,7 +119,7 @@ class Meta_Info:
             #shutil.move(root+'/'+file, root+'/Encrypted/'+file)
                 
                                                 
-        return author_feature, creator_feature, producer_feature, encrypted_feature
+        return np.float64(author_feature), np.float64(creator_feature), np.float64(producer_feature), np.float64(encrypted_feature)
         
         
     def classify(self,filepointer):

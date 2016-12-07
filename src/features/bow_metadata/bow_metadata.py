@@ -185,7 +185,7 @@ class BowMetadata():
             except:
                 score = 0
             if score >= self.punish_threshold: return 1
-            else: return score*self.punish_factor
+            else: return np.float64(score*self.punish_factor)
 
         # clean_test_data=[]
         # if self.convert_data(metapointer[self.of_type]):
@@ -201,4 +201,4 @@ class BowMetadata():
         result = self.forest.predict(test_data_feature)
         result_proba = self.forest.predict_proba(test_data_feature)
 
-        return result_proba[0][1]
+        return np.float64(result_proba[0][1])

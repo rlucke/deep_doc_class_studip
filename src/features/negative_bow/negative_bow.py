@@ -164,7 +164,7 @@ class Negative_BoW_Text_Module:
         txt = self.sanitize(txt)
         bow = self.get_bow(txt)
         score = float(self.get_score(bow,self.lib))
-        return score
+        return np.float64(score)
 
     def train(self,filenames,classes,metalist = None):
         """

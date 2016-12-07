@@ -38,7 +38,7 @@ class Page_Size_Module:
                 length += 1
         except:
             return np.nan
-        return float(length)
+        return np.float64(length)
 
     def get_function(self,filepointer, metapointer = None):
         """
@@ -48,7 +48,7 @@ class Page_Size_Module:
         @return                 number of kilobytes per page
         """
         #get filesize in kilobytes
-        size = float(os.path.getsize(filepointer.name)/(1024.0))
+        size = np.float64(os.path.getsize(filepointer.name)/(1024.0))
         
         reader = PdfFileReader(filepointer)
         pages = reader.getNumPages()
@@ -57,9 +57,9 @@ class Page_Size_Module:
         #pages = self.enum_pages(filepointer)
         if(not self.raw):
             if pages != np.nan:
-                return size/pages
+                return np.float64(size/pages)
             else:
-                return pages
+                return np.float64(pages)
         else:
             return np.array([size,pages])
 

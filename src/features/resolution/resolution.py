@@ -4,6 +4,7 @@ from os.path import join, realpath, dirname, isdir, basename
 MOD_PATH = dirname(realpath(__file__))
 from doc_globals import*
 from PyPDF2 import PdfFileReader
+import numpy as np
 
 class Resolution_Module:
 
@@ -22,12 +23,12 @@ class Resolution_Module:
             pdf = PdfFileReader(fp)
             page = pdf.getPage(0).mediaBox
             if(self.side == 'x'):
-                return float(page.getUpperRight_x() - page.getLowerLeft_x())
+                return np.float64(page.getUpperRight_x() - page.getLowerLeft_x())
             else:
-                return float(page.getUpperRight_y() - page.getLowerRight_y())
+                return np.float64(page.getUpperRight_y() - page.getLowerRight_y())
         except:
             self.error = True
-            return 0.0
+            return np.float64(0.0)
 
 
 

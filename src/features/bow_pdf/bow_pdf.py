@@ -151,7 +151,7 @@ class BoW_Text_Module:
         txt = self.sanitize(txt)
         bow = self.get_bow(txt)
         score = float(self.get_score(bow,self.lib))
-        return score
+        return np.float64(score)
 
     def train(self,filenames,classes,metalist = None):
         """
@@ -193,66 +193,3 @@ class BoW_Text_Module:
         f.write(str(lib))
         f.close
         return
-
-
-"""
-#training script to create the lib
-save = open('bow_train.txt','w')
-m = BoW_Text_Module('train')
-bows = list()
-
-filenames = list()
-file_class = dict()
-
-#create dictionary with classifications
-with open('classification.csv','r') as classes:
-    reader = csv.reader(classes,delimiter=';', quotechar='|')
-    for row in reader:
-        file_class['./files/'+row[0]+'.pdf'] = row[2]
-
-for file in os.listdir("./files"):
-    if file.endswith(".pdf"):
-#        print(file)
-        filenames.append('./files/'+file)
-
-counter = 0
-bag = dict()
-for i in range(len(filenames)):
-    counter += 1
-    print(str(counter)+'/'+str(len(filenames)))
-    if file_class[filenames[i]] == 'True':
-        continue
-    #if(counter == 100):
-    #    break
-    fp = open(filenames[i],'rb')
-    try:
-        b = m.get_bow(m.sanitize(m.convert_pdf_to_txt(fp)))
-        bows.append(b)
-    except:
-        print('troubleshooting with file: '+fp.name)
-    finally:
-        fp.close()
-    if counter%500 == 0:
-        bow = sum(bows, collections.Counter())
-#        bb = bow.most_common(1000)
-#        bow = collections.Counter()
-#        for elem in bb:
-#            bow[elem[0]] = elem[1]
-        bows = [bow]
-bow = sum(bows, collections.Counter())
-#bb = bow.most_common(1000)
-#bow = dict()
-#for elem in bb:
-#    bow[elem[0]] = elem[1]
-
-all = 0
-for key in bow:
-    all += bow[key]
-
-for key in bow:
-    bow[key] = float(bow[key])/float(all)
-
-save.write(str(bow))
-save.close()
-
-"""

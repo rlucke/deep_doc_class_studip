@@ -27,10 +27,10 @@ class page_orientation_module:
             page = pdf.getPage(0).mediaBox
             if page.getUpperRight_x() - page.getLowerLeft_x() > page.getUpperRight_y() - page.getLowerRight_y():
                 #Landscape
-                return 0.0
+                return np.float64(0.0)
             else:
                 #Portrait
-                return 1.0
+                return np.float64(1.0)
         except:
             self.error = True
             return np.nan
