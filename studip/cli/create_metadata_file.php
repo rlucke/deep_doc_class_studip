@@ -4,21 +4,21 @@
  * create_metadata_file.php - Create metadata file for classification 
  *
  * Copyright (C) 2016 - Ron Lucke <rlucke@uos.de>
+ * 
+ * usage: 
+ * -s flag is for semester selection, has to be the name from semester_data table
+ * to create a metadata file just pipe the output of this script to a file of your choice
  *
  */
 require_once 'studip_cli_env.inc.php';
-
 if (isset($_SERVER["argv"])) {
-
     // check for command line options
     $options = getopt("s:");
-
     if (isset($options["s"])) {
         $semester_name = $options["s"];
     } else {
         $semester_name = "";
     }
-
     $db = DBManager::get();
     if (!empty($semester_name)) {
         $stmt = $db->prepare("
@@ -33,11 +33,14 @@ if (isset($_SERVER["argv"])) {
         $stmt->execute();
         $semester = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        
+        if(empty($semester)) {
+            echo "semester not found";
+            exit(1);
+        }
+
         $beginn = $semester[0]["beginn"];
         $ende = $semester[0]["ende"];
-        
-        echo "collecting seminars...";
+
         $stmt = $db->prepare("
                 SELECT
                     Seminar_id
@@ -53,7 +56,6 @@ if (isset($_SERVER["argv"])) {
         $stmt->execute();
         $seminare = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } else {
-        echo "collecting seminars...";
         $stmt = $db->prepare("
                 SELECT
                     Seminar_id
@@ -63,20 +65,14 @@ if (isset($_SERVER["argv"])) {
         $stmt->execute();
         $seminare = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
     if(empty($seminare)) {
-        echo " no seminars found. \n";
+        echo "no seminars found";
         exit(1);
-    } else {
-        echo " done. \n";
-    }
-
+    } 
     $seminar_ids = array();
     foreach ($seminare as $seminar) {
         array_push($seminar_ids, $seminar["Seminar_id"]);
     }
-
-    echo "collecting documents... ";
     $seminar_ids_string = "('".join("','", $seminar_ids)."')";
     $stmt = $db->prepare("
             SELECT
@@ -94,14 +90,11 @@ if (isset($_SERVER["argv"])) {
             ");
     $stmt->execute();
     $dokumente = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    echo " done. \n";
-    echo "writing csv file...";
-    $fp = fopen('meta.csv', 'w');
-    fputs($fp, "document_id; filename; folder_name; folder_description; description \n");
+
+    $csv = '"document_id", "filename", "folder_name", "folder_description", "description"'." \n";
     foreach($dokumente as $dokument) {
-        fputs($fp, join(";", $dokument)."\n");
+        $csv .= '"'.join('","', $dokument).'"'." \n";
     }
-    fclose($fp); 
-    echo " done. \n";
+    fwrite(STDOUT, $csv);
 }
 ?>
