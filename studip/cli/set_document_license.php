@@ -8,6 +8,7 @@
  * usage: 
  * -f flag csv file with prediction and document id
  * -p flag as prediction limit
+ * output can be piped to a csv file
  */
 require_once 'studip_cli_env.inc.php';
 if (isset($_SERVER["argv"])) {
@@ -38,7 +39,9 @@ if (isset($_SERVER["argv"])) {
     }
     
     //write in db
+    
     $db = DBManager::get();
+    echo '"document_id", "records affected"'." \n";
     foreach ($documents as $document) {
         if ($prediction <= $document["prediction"]) {
             //TODO set right license id
@@ -48,13 +51,13 @@ if (isset($_SERVER["argv"])) {
                 SET 
                     protected = '42'
                 WHERE
-                    protected = '2'
+                    protected = '0'
                 AND 
                     dokument_id = :id
                 ");
             $stmt->bindParam(":id", $document['id']);
             $stmt->execute();
-            echo $document["id"]." \n";
+            echo '"'.$document["id"].'", "'.$stmt->rowCount().'"'." \n";
         }
     }
 
