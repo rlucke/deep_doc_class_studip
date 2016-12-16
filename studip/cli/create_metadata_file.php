@@ -12,6 +12,7 @@
  */
 require_once 'studip_cli_env.inc.php';
 if (isset($_SERVER["argv"])) {
+    $db = DBManager::get();
     // check for command line options
     $options = getopt("s:");
     if (isset($options["s"])) {
@@ -19,7 +20,7 @@ if (isset($_SERVER["argv"])) {
     } else {
         $semester_name = "";
     }
-    $db = DBManager::get();
+
     if (!empty($semester_name)) {
         $stmt = $db->prepare("
                 SELECT
@@ -41,39 +42,27 @@ if (isset($_SERVER["argv"])) {
         $beginn = $semester[0]["beginn"];
         $ende = $semester[0]["ende"];
 
-        $stmt = $db->prepare("
+        $select_seminar ="
                 SELECT
                     Seminar_id
                 FROM 
                     seminare
                 WHERE
-                    start_time >= :beginn
+                    start_time >= $beginn
                     AND
-                    start_time <= :ende
-                ");
-        $stmt->bindParam(":beginn", $beginn);
-        $stmt->bindParam(":ende", $ende);
-        $stmt->execute();
-        $seminare = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    start_time <= $ende
+                ";
+        
     } else {
-        $stmt = $db->prepare("
+        $select_seminar ="
                 SELECT
                     Seminar_id
                 FROM 
                     seminare
-                ");
-        $stmt->execute();
-        $seminare = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                ";
+       
     }
-    if(empty($seminare)) {
-        echo "no seminars found";
-        exit(1);
-    } 
-    $seminar_ids = array();
-    foreach ($seminare as $seminar) {
-        array_push($seminar_ids, $seminar["Seminar_id"]);
-    }
-    $seminar_ids_string = "('".join("','", $seminar_ids)."')";
+
     $stmt = $db->prepare("
             SELECT
                 dokumente.dokument_id as document_id , dokumente.filename as filename, folder.name as folder_name, folder.description as folder_description, dokumente.description as description
@@ -84,7 +73,7 @@ if (isset($_SERVER["argv"])) {
             WHERE
                 dokumente.seminar_id
                 IN
-                $seminar_ids_string
+                ($select_seminar)
             AND
                 dokumente.range_id = folder.folder_id
             ");
