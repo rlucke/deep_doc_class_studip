@@ -9,83 +9,106 @@
  * -f flag csv file with prediction and document id
  * -l flag license id default is 42
  * -p flag as prediction limit
+ * -m flag for monochrome output, use this if you want to pipe
  */
 require_once 'studip_cli_env.inc.php';
 if (isset($_SERVER["argv"])) {
     // check for command line options
-    $options = getopt("p:f:l:h");
+    $options = getopt("p:f:l:hm");
+    if (isset($options["m"])) { 
+        $red     = "";
+        $green   = "";
+        $blue    = "";
+        $black   = "";
+        $redbg   = "";
+        $greenbg = "";
+        $bluebg  = "";
+        
+    } else {
+        $red      = "\033[1;31m";
+        $green    = "\033[1;32m";
+        $blue     = "\033[1;34m";
+        $black    = "\033[0m";
+        $redbg    = "\033[1;41m";
+        $greenbg  = "\033[1;42m";
+        $bluebg   = "\033[44m";
+    }
     if (isset($options["h"])) {
         echo "\n";
-        echo "\033[1;34mSet document license with predictions from deep doc class \033[0m \n";
-        echo "\033[1;34m__________________________________________________________ \033[0m \n";
+        echo $blue."Set document license with predictions from deep doc class  \n".$black;
+        echo $blue."___________________________________________________________\n".$black;
         echo "\n";
-        echo "\033[1;34m usage: \033[0m \n";
+        echo $blue."usage:\n".$black;
         echo "\n";
-        echo "\033[1;34m -f\033[0m flag csv file with prediction and document id \n";
-        echo "\033[1;34m -l\033[0m flag license id default is 42\n";
-        echo "\033[1;34m -p\033[0m flag as prediction limit \n";
-        echo "\033[1;34m__________________________________________________________ \033[0m \n";
+        echo $blue."-f".$black." flag csv file with prediction and document id \n";
+        echo $blue."-l".$black." flag license id default is 42\n";
+        echo $blue."-p".$black." flag as prediction limit \n";
+        echo $blue."-m".$black." flag for monochrome output, use this if you want to pipe\n";
+        echo $blue."___________________________________________________________\n".$black;
         echo "\n";
         exit(1);
     }
     if (isset($options["f"])) {
-        $file = $options["f"];
+        $opt_file = $options["f"];
     } else {
         exit(1);
     }
     if (isset($options["p"])) {
-        $prediction = $options["p"];
+        $opt_prediction = $options["p"];
     } else {
-        $prediction = 50;
+        $opt_prediction = 50;
     }
     if (isset($options["l"])) {
-        $license = $options["l"];
+        $opt_license = $options["l"];
     } else {
         // TODO set correct default
-        $license = 42;
+        $opt_license = 1;
     }
     //read file
 
-    if (!empty($file)) {
-        echo "\n";
-        echo "\033[1;34mSet document license with predictions from deep doc class \033[0m \n";
-        echo "\033[1;34m__________________________________________________________ \033[0m \n";
-        echo "\n";
-        if (($handle = fopen($file, "r")) !== FALSE) {
-            echo "\033[1;34mreading file... \033[0m";
-            $documents = [];
-            $csv = array_map('str_getcsv', file($file));
-            $document_id = array_search("document_id" , $csv[0]);
-            $prediction = array_search("prediction" , $csv[0]);
-            if (is_int($document_id) && is_int($prediction)) {
-                foreach ($csv as $num => $row) {
-                    if ($num == 0) { continue; }
-                    array_push($documents, array("id"=>$row[$document_id], "prediction"=> $row[$prediction]));
-                }
-            echo "\033[1;32mdone! \033[0m \n";
-            } else {
-                echo "\033[1;31mfail!\n\n";
-                if (!is_int($document_id)) echo "could not found document_id \n";
-                if (!is_int($prediction)) echo "could not found prediction \n";
-                echo "\033[0m \n";
-                exit(1);
+    echo "\n";
+    echo $blue."Set document license with predictions from deep doc class  \n".$black;
+    echo $blue."_______________________________________________________________\n".$black;
+    echo "\n";
+    if (($handle = fopen($opt_file, "r")) !== FALSE) {
+        echo $blue."reading file ".$file." ... ".$black;
+        $documents = [];
+        $csv = array_map('str_getcsv', file($opt_file));
+        $document_id = array_search("document_id" , $csv[0]);
+        $prediction = array_search("prediction" , $csv[0]);
+        if (is_int($document_id) && is_int($prediction)) {
+            foreach ($csv as $num => $row) {
+                if ($num == 0) { continue; }
+                array_push($documents, array("id"=>$row[$document_id], "prediction"=> $row[$prediction]));
             }
-        }
-        else {
-            echo "\033[1;31m\nError: file not found! \n";
-            echo "please select a csv file with document ids and predictions \n";
-            echo "\033[0m \n";
+        echo $green."done!\n".$black;
+        echo "\n";
+        echo $blue."prediction has to be greater than ".$opt_prediction.$black."\n";
+        } else {
+            echo $red."fail!\n\n";
+            if (!is_int($document_id)) echo "could not found document_id \n";
+            if (!is_int($prediction)) echo "could not found prediction \n";
+            echo $black."\n";
             exit(1);
         }
-
     }
-    
+    else {
+        echo $red."\nError: file not found! \n";
+        echo "please select a csv file with document ids and predictions \n";
+        echo $black."\n";
+        exit(1);
+    }
+
+
+
     //write in db
-    echo "\033[1;34m\nwrite in DB... \033[0m \n \n";
+    echo $blue."\nwrite in DB...\n\n".$black;
     $db = DBManager::get();
-    echo "\033[44m          document_id             record updated \033[0m\n";
+    echo $bluebg."          document_id              prediction   record updated ".$black."\n";
+    $docs = 0;
     foreach ($documents as $document) {
-        if ($prediction <= $document["prediction"]) {
+        if ($opt_prediction <= $document["prediction"]) {
+            $docs++;
              $stmt = $db->prepare("
                 UPDATE
                     dokumente
@@ -97,24 +120,26 @@ if (isset($_SERVER["argv"])) {
                     dokument_id = :id
                 ");
             $stmt->bindParam(":id", $document['id']);
-            $stmt->bindParam(":license", $license);
+            $stmt->bindParam(":license", $opt_license);
             $exec = $stmt->execute();
             if($exec) {
-                echo "\033[1;34m".$document["id"]." \033[0m";
+                echo $blue.$document["id"]."       ".$document["prediction"]."      ".$black;
                 if ($stmt->rowCount() == 0) {
-                    echo "\033[1;41m       no       \033[0m\n";
+                    echo $redbg."       no       ".$black."\n";
                 } else {
-                    echo "\033[1;42m       yes      \033[0m\n";
+                    echo $greenbg."       yes      ".$black."\n";
                 }
             } else {
-                echo "\033[1;31m Error can not update licence for document:". $document["id"] ."\033[0m \n";
+                echo $red."Error can not update licence for document:". $document["id"] .$black."\n";
             }
         }
     }
+    if ($docs == 0) {
+        echo $redbg."         no document has a prediction greater than ".$opt_prediction."          ".$black."\n";
+        echo $redbg."            no values were updated in the database             ".$black."\n";
+    }
     echo "\n";
-    echo "\033[1;32mdone! \033[0m \n \n";
+    echo $green."done!\n\n".$black;
 
-   
-   
 }
 ?>
